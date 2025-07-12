@@ -15,6 +15,7 @@ from drf_yasg import openapi
 
 from .models import Listing, Booking, Payment
 from .serializers import ListingSerializer, BookingSerializer, PaymentSerializer
+from .tasks import send_booking_confirmation
 
 
 # Create your views here.
@@ -26,6 +27,10 @@ class ListingViewSet(viewsets.ModelViewSet):
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+
+    def perform_create(self, serializer):
+        booking = serializer.save()
+        send_booking_confirmation.delay(booking.user.email, booking.booking_id)
 
 
 class PaymentViewSet(viewsets.ModelViewSet):

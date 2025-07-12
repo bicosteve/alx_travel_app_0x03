@@ -174,7 +174,7 @@ CHAPA_WEBHOOK_URL = "/api/chapa-webhook/"
 
 # Celery Configurations
 
-CELERY_BROKER_URL = ""
+CELERY_BROKER_URL = "amqp://localhost"
 CELERY_RESULT_BACKEND = ""
 CELERY_ACCEPTED_CONTNET = "application/json"
 CELERY_TASK_SERIALIZER = "json"

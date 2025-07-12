@@ -1,10 +1,10 @@
 from django.core.mail import send_mail
 from django.conf import settings
 
-from celery import shared_task
+from alx_travel_app.celery import shared_task
 
 
-from .models import Payment
+from .models import Payment, Booking
 
 
 @shared_task
@@ -99,3 +99,33 @@ def send_payment_checkout_mail(payment_id, email, checkout_url):
         return f"Payment {payment_id} does not found"
     except Exception as e:
         return f"ERROR: sending payment checkout mail : {str(e)}"
+
+
+@shared_task
+def send_booking_confirmation(email, booking_id):
+    try:
+        booking = Booking.objects.get(booking_id=booking_id)
+        listing = booking.listing
+        subject = "Booking Confirmation"
+        msg = f"""
+            Hello, {booking.user.username},  your booking for {listing} has been confirmed.
+            
+            Details:
+            * Property      : {listing.name}
+            * Check-In      : {booking.start_date}
+            * Check-Out     : {booking.end_date}
+
+            Regards,
+            
+        """
+        send_mail(
+            subject=subject,
+            message=msg,
+            from_email="norelpy@bookingapp.com",
+            recipient_list=[email],
+            fail_silently=False,
+        )
+    except Booking.DoesNotExist:
+        return f"Booking {booking_id} was not found"
+    except Exception as e:
+        return f"ERROR: sending booking confirm email : {str(e)}"
