@@ -1,0 +1,9 @@
+Django
+djangorestframework
+django-cors-headers
+celery
+drf-yasg
+django-environ
+mysqlclient
+requests
+pika
